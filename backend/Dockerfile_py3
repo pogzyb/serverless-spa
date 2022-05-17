@@ -1,0 +1,39 @@
+FROM python:3.8-alpine3.12 as stage
+
+COPY requirements.txt /tmp/requirements.txt
+
+RUN python -m venv /opt/venv
+ENV PATH=/opt/venv/bin:${PATH}
+
+RUN apk add --update \
+    git \
+    build-base \
+    linux-headers \
+    pcre-dev \
+    && apk add --virtual build-deps \
+    gcc \
+    libffi-dev \
+    openssl-dev \
+    musl-dev \
+    && apk add --no-cache openssl \
+    && pip install --upgrade pip \
+    && pip install --upgrade wheel \
+    && pip install -r /tmp/requirements.txt \
+    && apk del build-deps
+
+FROM python:3.8-alpine3.12 as build
+
+COPY --from=stage /opt/venv /opt/venv
+ENV HOME=/backend
+ENV PATH=/opt/venv/bin:${PATH}
+ENV PYTHONPATH=${PYTHONPATH}:/${HOME}
+
+WORKDIR ${HOME}
+
+COPY api api
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+EXPOSE ${APP_PORT}
+USER guest
+CMD ["entrypoint.sh"]
