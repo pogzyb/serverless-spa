@@ -1,0 +1,34 @@
+---
+version: '3.5'
+
+volumes:
+  exclude:
+
+services:
+  backend:
+    build:
+      context: backend
+      dockerfile: Dockerfile_py3
+    container_name: backend
+    hostname: backend
+    env_file:
+      - .env.backend
+    ports:
+      - 8080:8080
+    volumes:
+      - ./backend:/backend
+    command: /bin/sh -c entrypoint.sh
+
+  frontend:
+    build:
+      context: frontend
+      dockerfile: Dockerfile_node
+    container_name: frontend
+    hostname: frontend
+    env_file:
+      - .env.frontend
+    ports:
+      - 3000:3000
+    volumes:
+      - exclude:/frontend/spa/node_modules
+      - ./frontend/spa:/frontend/spa
