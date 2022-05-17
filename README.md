@@ -1,6 +1,6 @@
 ### PeerIQ cashflow challenge
 
-Source: 
+Source: https://github.com/peeriq/cashflow-challenge
 
 #### Overview:
 
