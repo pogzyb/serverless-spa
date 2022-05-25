@@ -31,10 +31,12 @@ class Amortization:
         total_interest = 0.0        
         for n in range(term_in_months):
             month = n + 1
-            starting_balance = self.loan_amount if n == 0 else self.get_starting_balance(month, principal_payment)
+            starting_balance = self.loan_amount if n == 0 else ending_balance
+            if starting_balance < 0:
+                fixed_payment = 0
             interest_payment = self.get_interest_payment(starting_balance)
             principal_payment = self.get_principal_payment(fixed_payment, interest_payment)
-            ending_balance = self.get_ending_balance(month, principal_payment)
+            ending_balance = self.get_ending_balance(starting_balance, principal_payment)
             total_interest += interest_payment
             # put together data structure output
             month_schedule_values = AmortizationScheduleMonth(
@@ -63,15 +65,19 @@ class Amortization:
         return self.loan_amount * ( rate * (1 + rate)**months ) / ( (1 + rate)**months - 1 )
         
     def get_starting_balance(self, month: int, principal_payment: float) -> float:
-        return self.loan_amount - ( ( month - 1 ) * principal_payment )
+        v = self.loan_amount - ( ( month - 1 ) * principal_payment )
+        return round(v, 2)
 
-    def get_ending_balance(self, month: int, principal_payment: float) -> float:
-        return self.loan_amount - ( month * principal_payment )
+    def get_ending_balance(self, starting_balance: float, principal_payment: float) -> float:
+        v = starting_balance - principal_payment
+        return round(v, 2)
 
     def get_interest_payment(self, starting_balance: float) -> float:
         rate = self.rate_as_decimal(self.interest_rate)
-        return starting_balance * rate / 12
+        v = starting_balance * (rate / 12)
+        return round(v, 2)
 
     def get_principal_payment(self, fixed_payment: float, interest_payment: float) -> float:
-        return fixed_payment - interest_payment
+        v = fixed_payment - interest_payment
+        return round(v, 2)
     
