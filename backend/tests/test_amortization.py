@@ -26,16 +26,15 @@ class TestAmortization(TestCase):
         self.assertEqual(starting_balance, expected_amount, f"{starting_balance} != {expected_amount}")
 
     def test_get_ending_balance(self):
-        month = 1
         principal_pmt = 1000
-        expected_ending_balance = self.client.loan_amount - (month * principal_pmt)
-        ending_balance = self.client.get_ending_balance(month, principal_pmt)
+        starting_balance = 100000
+        expected_ending_balance = starting_balance - principal_pmt
+        ending_balance = self.client.get_ending_balance(starting_balance, principal_pmt)
         self.assertEqual(ending_balance, expected_ending_balance, f"{ending_balance} != {expected_ending_balance}")
         # check month 5
-        month = 5
         principal_pmt = 1000
-        expected_ending_balance = self.client.loan_amount - (month * principal_pmt)
-        ending_balance = self.client.get_ending_balance(month, principal_pmt)
+        expected_ending_balance = starting_balance - principal_pmt
+        ending_balance = self.client.get_ending_balance(starting_balance, principal_pmt)
         self.assertEqual(ending_balance, expected_ending_balance, f"{ending_balance} != {expected_ending_balance}")
 
     def test_get_principal_payment(self):
@@ -47,12 +46,12 @@ class TestAmortization(TestCase):
 
     def test_get_interest_payment(self):
         # with client defaults
-        expected_interest_pmt = self.client.loan_amount * 0.05 / 12
+        expected_interest_pmt = round(self.client.loan_amount * 0.05 / 12, 2)
         interest_pmt = self.client.get_interest_payment(self.client.loan_amount)
         self.assertEqual(interest_pmt, expected_interest_pmt, f'{interest_pmt} != {expected_interest_pmt}')
         # with starting balance of 10k
         interest_pmt = self.client.get_interest_payment(10000)
-        expected_interest_pmt = 10000 * 0.05 / 12
+        expected_interest_pmt = round(10000 * 0.05 / 12, 2)
         self.assertEqual(interest_pmt, expected_interest_pmt, f'{interest_pmt} != {expected_interest_pmt}')
 
     def test_fixed_payment(self):
